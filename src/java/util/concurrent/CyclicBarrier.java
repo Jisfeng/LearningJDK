@@ -136,6 +136,7 @@ import java.util.concurrent.locks.ReentrantLock;
  * @since 1.5
  */
 // 循环栅栏，凑够一组线程后批量唤醒，下一组线程达到时可以重用此工具
+// 使用场景：让一组线程准备完毕后（到达栅栏）同时执行
 public class CyclicBarrier {
     /** The lock for guarding barrier entry */
     // 线程争用的独占锁，只有上一个线程陷入阻塞，下一个线程才能争锁
@@ -356,7 +357,7 @@ public class CyclicBarrier {
      */
     private int dowait(boolean timed, long nanos) throws InterruptedException, BrokenBarrierException, TimeoutException {
         final ReentrantLock lock = this.lock;
-        lock.lock();
+        lock.lock(); // 加锁
         try {
             final Generation g = generation;
             
@@ -371,7 +372,7 @@ public class CyclicBarrier {
             
             int index = --count;
             
-            //
+            // 栅栏开启，唤醒所有线程
             if(index == 0) {
                 boolean ranAction = false;
                 try {

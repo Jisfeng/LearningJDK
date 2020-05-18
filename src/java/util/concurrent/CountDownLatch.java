@@ -163,6 +163,11 @@ import java.util.concurrent.locks.AbstractQueuedSynchronizer;
  * 后续可以通过撤销闸门来唤醒阻塞线程
  * 但是，必须等所有闸门都撤销后，所有等待的线程才能顺次被唤醒
  * 这个过程就像开闸放水一样...
+ * 因此，所有等待的线程在闸门开启后，将都被唤醒，底层就需要使用共享模式
+ *
+ * 通常的使用场景：
+ *  1、等其他线程执行完毕，再执行当前线程，等待的是当前线程
+ *  2、当前线程执行完毕，再同时让其他线程开始执行，等待的是其他线程
  */
 public class CountDownLatch {
     private final Sync sync;
